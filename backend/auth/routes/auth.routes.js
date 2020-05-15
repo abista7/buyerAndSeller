@@ -73,7 +73,7 @@ auth.post('/register', async (req, res) => {
 
             await db.collection(USERS).insertOne(userToCreate);
 
-            redisClient.incr('/api/register', (err, updatedValue) => { });
+            redisClient.incr('/api/auth/register', (err, updatedValue) => { });
 
             res.json({ valid: true })
         } catch (e) {

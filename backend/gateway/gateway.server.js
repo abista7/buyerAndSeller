@@ -1,7 +1,7 @@
 const express = require('express');
 const httpProxy = require('http-proxy');
 const app = express();
-const port = process.env.STATS_SERVER_PORT;
+const port = process.env.GATEWAY_SERVER_PORT;
 
 const apiProxy = httpProxy.createProxyServer();
 
@@ -13,7 +13,7 @@ apiProxy.on('error', (err, req, res) => {
 app.all("/api/stats", (req, res) => {
     console.log('hello');
     apiProxy.web(req, res, {
-        target: 'http://auth',
+        target: 'http://auth:4002',
     });
 });
 
