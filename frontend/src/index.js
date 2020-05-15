@@ -10,9 +10,7 @@ import './index.css';
 import App from './App'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
 const store = createStore(rootReducer, applyMiddleware(thunk));
-
 
 ReactDOM.render(
     <React.StrictMode>

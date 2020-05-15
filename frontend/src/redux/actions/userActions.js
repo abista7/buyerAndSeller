@@ -27,7 +27,7 @@ export const login = () => (dispatch, getState) => {
     console.log('Login function!')
     const user = getState().userReducer.user;
     const password = getState().userReducer.password;
-    const url = `http://localhost:4000/api/login?user=${user}&password=${password}`;
+    const url = `http://localhost:4000/api/auth/login?user=${user}&password=${password}`;
 
     fetch(url)
       //.then(res => console.log(res))
@@ -45,27 +45,27 @@ export const login = () => (dispatch, getState) => {
 };
 
 export const register = () => (dispatch, getState) => {
-  const url = `http://localhost:4000/api/register`;
+  const url = `http://localhost:4000/api/auth/register`;
 
-  fetch(url, {
+  const user = getState().userReducer.user;
+  const password = getState().userReducer.password;
+  const email = getState().userReducer.email;
+  const role = getState().userReducer.role;
+
+ fetch(url, {
     method: "POST",
     headers: {
     "Content-type": "application/json",
     },
-    body: JSON.stringify({
-      user: getState().userReducer.user,
-      password: getState().userReducer.password,
-      email: getState().userReducer.email,
-      role: getState().userReducer.role
-    })
+    body: JSON.stringify({ user, password, email, role })
   })//.then(res => console.log(res))
   .then(res => res.json())
   .then(data => {
     if (data.valid) {
-      dispatch(setEmail(data.email));
-      dispatch(setPassword(data.password));
-      dispatch(setUser(data.user));
-      dispatch(setRole(data.role));
+      dispatch(setEmail(email));
+      dispatch(setPassword(password));
+      dispatch(setUser(user));
+      dispatch(setRole(role));
       dispatch(setIsLoggedIn(true));
     }
   }).catch(console.log);

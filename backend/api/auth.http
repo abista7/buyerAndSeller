@@ -1,0 +1,36 @@
+
+# Auth Server
+### Login
+GET http://localhost:4000/api/auth/login?user=asdd&password=asd HTTP/1.1
+Content-Type: application/json
+
+## Response 
+
+{
+  "valid": true,
+  "user": {
+    "email": "asd@gmail.c",
+    "role": "seller"
+  }
+}
+
+### Register
+POST http://localhost:4000/api/auth/register HTTP/1.1
+Content-Type: application/json
+
+{
+    "user": "asdd",
+    "password": "asd", 
+    "email": "asdd@gmail.c", 
+    "role": "seller"
+}
+
+## Response 
+
+{
+  "valid": true,
+  "user": {
+    "email": "asd@gmail.c",
+    "role": "seller"
+  }
+}

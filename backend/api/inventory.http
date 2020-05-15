@@ -1,0 +1,61 @@
+# Inventory Server
+### Get All Items
+GET http://localhost:4001/api/inventory/items HTTP/1.1
+Content-Type: application/json
+
+## Response 
+
+{
+  "valid": true,
+  "user": {
+    "email": "asd@gmail.c",
+    "role": "seller"
+  }
+}
+
+### Get Item
+GET http://localhost:4001/api/inventory/item/5ebe6101ef685300d094734a HTTP/1.1
+Content-Type: application/json
+
+## Response 
+
+{
+  "valid": true,
+  "user": {
+    "email": "asd@gmail.c",
+    "role": "seller"
+  }
+}
+
+### Post item
+POST http://localhost:4001/api/inventory/item
+Content-Type: application/json
+
+{
+  "name": "name1",
+  "price": "price",
+  "description": "description",
+  "sellerUserName": "username"
+}
+
+## Response
+
+{
+  "valid": true,
+  "item": {
+    "name": "name",
+    "price": "price",
+    "description": "description",
+    "sellerUserName": "username",
+    "_id": "5ebe62d7248c37019c67ac44"
+  }
+}
+
+### Remove item
+DELETE http://localhost:4001/api/inventory/item/5ebe76f64e4828006ee56816
+Content-Type: application/json
+
+## Response
+{
+  "valid": true
+}

@@ -1,0 +1,111 @@
+version: '3'
+
+services:
+
+  stats: 
+    build: ./stats
+    image: nodejs
+    container_name: stats-server
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "${STATS_SERVER_PORT}"
+    ports:
+      - "${STATS_SERVER_PORT}:${STATS_SERVER_PORT}"
+    volumes:
+      - ./stats:/usr/src/app
+      - ./stats/node_modules:/usr/src/app/node_modules
+    networks:
+      - app-network
+    links:
+      - redis
+    command: /usr/src/app/node_modules/.bin/nodemon stats.server.js
+
+  gateway: 
+    build: ./gateway
+    image: nodejs
+    container_name: gateway-server
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "${GATEWAY_SERVER_PORT}"
+    ports:
+      - "${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}"
+    volumes:
+      - ./gateway:/usr/src/app
+      - ./gateway/node_modules:/usr/src/app/node_modules
+    networks:
+      - app-network
+    links:
+      - auth
+      - stats
+    command: /usr/src/app/node_modules/.bin/nodemon gateway.server.js
+  
+  auth:
+    build: ./auth
+    image: nodejs
+    container_name: auth-server
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "${AUTH_SERVER_PORT}"
+    ports:
+      - "${AUTH_SERVER_PORT}:${AUTH_SERVER_PORT}"
+    volumes:
+      - ./auth:/usr/src/app
+      - ./auth/node_modules:/usr/src/app/node_modules
+    networks:
+      - app-network
+    links:
+      - mongo
+      - redis
+    command: /usr/src/app/node_modules/.bin/nodemon auth.server.js
+
+  inventory:
+    build: ./inventory
+    image: nodejs
+    container_name: inventory-server
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "${INVENTORY_SERVER_PORT}"
+    ports:
+      - "${INVENTORY_SERVER_PORT}:${INVENTORY_SERVER_PORT}"
+    volumes:
+      - ./inventory:/usr/src/app
+      - ./inventory/node_modules:/usr/src/app/node_modules
+    networks:
+      - app-network
+    links:
+      - mongo
+    command: /usr/src/app/node_modules/.bin/nodemon inventory.server.js
+
+  mongo:
+    image: mongo:4.1.8-xenial
+    container_name: mongo
+    restart: unless-stopped
+    env_file: .env
+    volumes:  
+      - ./data:/data/db  
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    networks:
+      - app-network  
+
+  redis:
+    image: "redis:alpine"
+    networks:
+      - app-network  
+    expose: 
+      - "${REDIS_SERVER_PORT}"
+    ports:
+      - "${REDIS_SERVER_PORT}:${REDIS_SERVER_PORT}"
+
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+  node_modules:
