@@ -47,26 +47,29 @@ export const login = () => (dispatch, getState) => {
 export const register = () => (dispatch, getState) => {
   const url = `http://localhost:4000/api/auth/register`;
 
-  const user = getState().userReducer.user;
-  const password = getState().userReducer.password;
-  const email = getState().userReducer.email;
-  const role = getState().userReducer.role;
-
- fetch(url, {
+  fetch(url, {
     method: "POST",
     headers: {
     "Content-type": "application/json",
     },
-    body: JSON.stringify({ user, password, email, role })
-  })//.then(res => console.log(res))
+    body: JSON.stringify({
+      user: getState().userReducer.user,
+      password: getState().userReducer.password,
+      email: getState().userReducer.email,
+      role: getState().userReducer.role,
+    })
+  })
   .then(res => res.json())
   .then(data => {
     if (data.valid) {
-      dispatch(setEmail(email));
-      dispatch(setPassword(password));
-      dispatch(setUser(user));
-      dispatch(setRole(role));
+      dispatch(setEmail(data.email));
+      dispatch(setPassword(data.password));
+      dispatch(setUser(data.user));
+      dispatch(setRole(data.role));
       dispatch(setIsLoggedIn(true));
+    }
+    else if(data.status == "dup_entry") {
+      dispatch(setRole("register_duplicate"));  
     }
   }).catch(console.log);
 };

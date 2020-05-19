@@ -8,10 +8,7 @@ const MONGO_DB = process.env.MONGO_DB
 items.get('/item/:itemId', async (req, res) => {
     const id = req.params.itemId;
 
-    var validEntry =
-        (id !== '')
-
-    if (!validEntry) {
+    if (id === '') {
         return res.json({ valid: false, message: "Data is incorrect" })
     }
 
@@ -61,13 +58,13 @@ items.delete('/item/:itemId', async (req, res) => {
 });
 
 items.post('/item', async (req, res) => {
-    const { name, price, description, sellerUserName } = req.body;
+    const { name, price, description, seller } = req.body;
 
     var validEntry =
         (name !== '') &&
         (price !== '') &&
         (description !== '') &&
-        (sellerUserName !== '')
+        (seller !== '')
 
     if (!validEntry) {
         return res.json({ valid: false, message: "Data is incorrect" })
@@ -75,9 +72,19 @@ items.post('/item', async (req, res) => {
 
     MongoPool.getInstance(async function (db) {
         try {
+            const numTimeSold = 0;
+            const purchasers = [];
+
             const item = (await db.db(MONGO_DB)
                 .collection(ITEMS)
-                .insertOne({ name, price, description, sellerUserName }))
+                .insertOne({ 
+                    name, 
+                    price, 
+                    description, 
+                    seller,
+                    numTimeSold,
+                    purchasers
+                }))
                 .ops[0]
 
             res.json({

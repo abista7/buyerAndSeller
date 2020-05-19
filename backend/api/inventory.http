@@ -19,12 +19,13 @@ Content-Type: application/json
 
 ## Response 
 
+
 {
-  "valid": true,
-  "user": {
-    "email": "asd@gmail.c",
-    "role": "seller"
-  }
+  "name": "name1",
+  "price": "price",
+  "description": "description",
+  "seller": "username",
+  "_id": "5ebe62d7248c37019c67ac44"
 }
 
 ### Post item
@@ -33,9 +34,9 @@ Content-Type: application/json
 
 {
   "name": "name1",
-  "price": "price",
+  "price": 123,
   "description": "description",
-  "sellerUserName": "username"
+  "seller": "username"
 }
 
 ## Response
@@ -46,7 +47,7 @@ Content-Type: application/json
     "name": "name",
     "price": "price",
     "description": "description",
-    "sellerUserName": "username",
+    "seller": "username",
     "_id": "5ebe62d7248c37019c67ac44"
   }
 }

@@ -1,3 +1,5 @@
+// from lab7
+
 const express = require('express');
 const httpProxy = require('http-proxy');
 const app = express();
@@ -10,8 +12,20 @@ apiProxy.on('error', (err, req, res) => {
   res.status(500).send('Proxy Error');
 });
 
-app.all("/api/stats", (req, res) => {
-    console.log('hello');
+// app.all("/api/auth/authenticate", (req, res) => {
+//   apiProxy.web(req, res, {
+//     target: 'http://localhost:3001',
+//   });
+// });
+
+// app.all("/api/auth/create", (req, res) => {
+//   apiProxy.web(req, res, {
+//     target: 'http://localhost:3002',
+//   });
+// });
+
+// just to test
+app.all("/api/stats/get", (req, res) => {
     apiProxy.web(req, res, {
         target: 'http://localhost:3001',
     });

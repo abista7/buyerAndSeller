@@ -83,5 +83,31 @@ auth.post('/register', async (req, res) => {
 });
 
 
+auth.get('/user/:userName', async (req, res) => {
+    const userName = req.params.userName;
+
+    if (userName === '') {
+        return res.json({ valid: false, message: "Data is incorrect" })
+    }
+
+    MongoPool.getInstance(async (db) => {
+        db = db.db(MONGO_DB)
+
+        try {            
+            const user = await db.collection(USERS)
+                .findOne({ $or: [{ user: userName }] });
+
+            if (user) {
+                return res.json({ valid: true, user })
+            }
+
+            res.json({ valid: false, message: "User not found" })
+        } catch (e) {
+            return res.json({ valid: false, message: "Database error.", em: e.message })
+        }
+    })
+});
+
+
 
 module.exports = auth;

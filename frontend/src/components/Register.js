@@ -1,15 +1,24 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {connect} from 'react-redux';
 import {setEmail, setUser, setPassword, setRole, register} from '../redux/actions/userActions';
+import {Redirect} from 'react-router-dom';
 
-const Register = ({isLoggedIn, dispatch, user, role, password, email}) => {
+const Register = ({isLoggedIn, dispatch, role}) => {
+    const [failedRegister, setFailedRegister] = useState(false);
+    const [registerDup, setRegisterDup] = useState(false);
+
     const attemptRegister = (event) => {
         event.preventDefault();
-        //query mongo with entered data, then 
-        //if user credentials are good
-        dispatch(register()); //temporary, check db with password and user value before doing this
+        dispatch(register()); 
+    }
 
-        //else return jsx component with invalid message
+    const checkIfSuccess= () => {
+        if(!isLoggedIn)
+            setFailedRegister(true);
+        if(role=="register_duplicate") {
+            setRegisterDup(true);
+            dispatch(setRole(""));
+        }
     }
 
     return (
@@ -41,8 +50,7 @@ const Register = ({isLoggedIn, dispatch, user, role, password, email}) => {
                         </div>
                         <div className="text-left">
                             <button    
-
-                                onClick={(e) => attemptRegister(e)}
+                                onClick={(e) => {setFailedRegister(false);  attemptRegister(e); checkIfSuccess();}}
                                 className="btn btn-primary mb-2 mt-3">
                                 Submit
                             </button>
@@ -51,11 +59,26 @@ const Register = ({isLoggedIn, dispatch, user, role, password, email}) => {
                     </form>  
                     
                 )}
+                {isLoggedIn && (
+                    <div>
+                        <div className="mt-3 mb-3 card bg-success text-white"> Successfully logged in! </div>
+                            <div>
+                            {role=="buyer" && ( 
+                                <Redirect to={{ pathname: "/user/buyer"}}/>
+                            )}
+                            {role=="seller" && ( 
+                                <Redirect to={{ pathname: "/user/seller"}}/>
+                            )}
+                        </div>
+                    </div>
+                )}
+                {failedRegister && !isLoggedIn && registerDup && (
+                    <div className="mt-3 mb-3 card bg-danger text-white"> That email or username is already in use, try again. </div>
+                )}
+                {failedRegister && !isLoggedIn && !registerDup && (
+                    <div className="mt-3 mb-3 card bg-danger text-white"> Invalid credentials entered, please fix and try again. </div>
+                )}
             </div> 
-            <h5 className="mt-5">TEST: value of user is {user}</h5> 
-            <h5 className="mt-5">TEST: value of password is {password}</h5> 
-            <h5 className="mt-5">TEST: value of email is {email}</h5> 
-            <h5 className="mt-5">TEST: value of role is {role}</h5> 
         </div>
     )
 }

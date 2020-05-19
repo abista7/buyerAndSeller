@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {connect} from 'react-redux'
 import ItemList from './ItemList.js'
 
-const Buyer = ({isLoggedIn, dispatch, role, user, items}) => {
+const Buyer = ({isLoggedIn, role, user, items}) => {
     const [showHistory, toggleShowHistory] = useState(false);
     const [showCatalog, toggleShowCatalog] = useState(true);
 
@@ -12,7 +12,6 @@ const Buyer = ({isLoggedIn, dispatch, role, user, items}) => {
                 <div>
                     <div className="display-4">Welcome {user}</div>
 
-    
                     <button className="btn btn-primary mt-4 mb-4" onClick={() => {toggleShowHistory(!showHistory); toggleShowCatalog(!showCatalog);}}>
                         Toggle Purchase History
                     </button>
@@ -38,8 +37,6 @@ const Buyer = ({isLoggedIn, dispatch, role, user, items}) => {
                 </div>
             )}
             {showCatalog && <ItemList />}
-             
-             <h5 className="mt-5">TEST: value of role is {role}</h5> <h5 className="mt-5">TEST: value of user is {user}</h5> 
         </div>
     );
     
@@ -47,7 +44,6 @@ const Buyer = ({isLoggedIn, dispatch, role, user, items}) => {
 
 const mapStateToProps = state => ({
     user: state.userReducer.user,
-    //password: state.userReducer.password,
     isLoggedIn: state.userReducer.isLoggedIn,
     role: state.userReducer.role,
     items: state.itemReducer.items,

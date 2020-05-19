@@ -1,11 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
 
-const {
-    MONGO_USERNAME,
-    MONGO_PASSWORD
-  } = process.env;
-
-const url = dbUri = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo?authSource=admin&useUnifiedTopology=true&useNewUrlParser=true`;
+const url = dbUri = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongo?authSource=admin&useUnifiedTopology=true&useNewUrlParser=true`;
 
 const option = {
   db:{

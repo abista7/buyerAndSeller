@@ -2,6 +2,45 @@ version: '3'
 
 services:
 
+  receipt: 
+    build: ./receipt
+    image: nodejs
+    container_name: receipt-server
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "${RECEIPT_SERVER_PORT}"
+    ports:
+      - "${RECEIPT_SERVER_PORT}:${RECEIPT_SERVER_PORT}"
+    volumes:
+      - ./receipt:/home/node/app
+      - ./receipt/node_modules:/home/node/app/node_modules
+    networks:
+      - app-network
+    links:
+      - kafka
+      - auth
+    command: node receipt.server.js
+
+  transaction: 
+    build: ./transaction
+    image: nodejs
+    container_name: transaction-server
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "${TRANSACTION_SERVER_PORT}"
+    ports:
+      - "${TRANSACTION_SERVER_PORT}:${TRANSACTION_SERVER_PORT}"
+    volumes:
+      - ./transaction:/home/node/app
+      - ./transaction/node_modules:/home/node/app/node_modules
+    networks:
+      - app-network
+    links:
+      - kafka
+    command: node transaction.server.js
+
   stats: 
     build: ./stats
     image: nodejs
@@ -13,13 +52,13 @@ services:
     ports:
       - "${STATS_SERVER_PORT}:${STATS_SERVER_PORT}"
     volumes:
-      - ./stats:/usr/src/app
-      - ./stats/node_modules:/usr/src/app/node_modules
+      - ./stats:/home/node/app
+      - ./stats/node_modules:/home/node/app/node_modules
     networks:
       - app-network
     links:
       - redis
-    command: /usr/src/app/node_modules/.bin/nodemon stats.server.js
+    command: node stats.server.js
 
   gateway: 
     build: ./gateway
@@ -32,14 +71,14 @@ services:
     ports:
       - "${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}"
     volumes:
-      - ./gateway:/usr/src/app
-      - ./gateway/node_modules:/usr/src/app/node_modules
+      - ./gateway:/home/node/app
+      - ./gateway/node_modules:/home/node/app/node_modules
     networks:
       - app-network
     links:
       - auth
       - stats
-    command: /usr/src/app/node_modules/.bin/nodemon gateway.server.js
+    command: node gateway.server.js
   
   auth:
     build: ./auth
@@ -52,14 +91,14 @@ services:
     ports:
       - "${AUTH_SERVER_PORT}:${AUTH_SERVER_PORT}"
     volumes:
-      - ./auth:/usr/src/app
-      - ./auth/node_modules:/usr/src/app/node_modules
+      - ./auth:/home/node/app
+      - ./auth/node_modules:/home/node/app/node_modules
     networks:
       - app-network
     links:
       - mongo
       - redis
-    command: /usr/src/app/node_modules/.bin/nodemon auth.server.js
+    command: node auth.server.js
 
   inventory:
     build: ./inventory
@@ -72,19 +111,24 @@ services:
     ports:
       - "${INVENTORY_SERVER_PORT}:${INVENTORY_SERVER_PORT}"
     volumes:
-      - ./inventory:/usr/src/app
-      - ./inventory/node_modules:/usr/src/app/node_modules
+      - ./inventory:/home/node/app
+      - ./inventory/node_modules:/home/node/app/node_modules
     networks:
       - app-network
     links:
       - mongo
-    command: /usr/src/app/node_modules/.bin/nodemon inventory.server.js
+    command: node inventory.server.js
 
   mongo:
     image: mongo:4.1.8-xenial
     container_name: mongo
     restart: unless-stopped
+    command: [--auth]
     env_file: .env
+    environment: 
+      MONGO_INITDB_DATABASE: ${MONGO_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     volumes:  
       - ./data:/data/db  
     ports:
@@ -101,6 +145,33 @@ services:
     ports:
       - "${REDIS_SERVER_PORT}:${REDIS_SERVER_PORT}"
 
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "${ZOOKEEPER_SERVER_PORT}:${ZOOKEEPER_SERVER_PORT}"
+    hostname: zookeeper
+    networks:
+      - app-network  
+
+  kafka:
+    image: wurstmeister/kafka
+    command: [start-kafka.sh]
+    ports:
+      - "${KAFKA_SERVER_PORT}:${KAFKA_SERVER_PORT}"
+    hostname: kafka
+    environment:
+      KAFKA_CREATE_TOPICS: "${KAFKA_TOPIC_NAME}:1:1" # topic:partition:replicas
+      KAFKA_ADVERTISED_HOST_NAME: kafka # docker-machine ip
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:${ZOOKEEPER_SERVER_PORT}
+      KAFKA_ADVERTISED_PORT: ${KAFKA_SERVER_PORT}
+      KAFKA_LISTENERS: PLAINTEXT://:${KAFKA_SERVER_PORT}
+      KAFKA_CFG_ADVERTISED_LISTENERS: zookeeper:${ZOOKEEPER_SERVER_PORT}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - "zookeeper"
+    networks:
+      - app-network  
 
 networks:
   app-network:

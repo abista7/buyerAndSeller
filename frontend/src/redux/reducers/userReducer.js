@@ -1,5 +1,5 @@
 const INITIAL_STATE = {
-    user: '',
+    user: 'default',
     email: '',
     password: '',
     isLoggedIn: false,

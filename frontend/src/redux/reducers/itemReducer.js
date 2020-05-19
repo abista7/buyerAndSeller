@@ -21,20 +21,24 @@ var item3Test = {
     description: "It's a yoyo",
     price: 220,
     seller: "default",
-    numTimeSold: 3,
-    purchasers: ['default'],
+    numTimeSold: 1,
+    purchasers: ['admin'],
 }
 
 const DEFAULT_STATE = {
+    name: "",
+    desription: "",
+    price: -1,
+    seller: "",
     item : {
         name: "",
         description: "",
-        price: 0,
+        price: -1,
         seller: "",
-        numTimeSold: 0,
+        numTimeSold: 1,
         purchasers: [],
     },
-    items: [item1Test, item2Test, item3Test, item1Test, item2Test, item3Test],
+    items: [],
 };
 
 const itemReducer = (state = DEFAULT_STATE, action) => {
@@ -42,12 +46,32 @@ switch (action.type) {
     case 'ITEM_SET_ITEM':
         return {
             ...state,
-            items: action.note,
+            items: action.item,
+        }
+    case 'ITEM_SET_NAME':
+        return {
+            ...state,
+            name: action.name,
+        }
+    case 'ITEM_SET_DESCRIPTION':
+        return {
+            ...state,
+            description: action.description,
+        }
+    case 'ITEM_SET_PRICE':
+        return {
+            ...state,
+            price: action.price,
         }
     case 'ITEM_ADD_ITEMS': 
         return { 
             ...state,
             items: [...state.items, state.item]
+        }
+    case 'ITEM_GET_ITEMS': 
+        return { 
+            ...state,
+            items: action.items
         }
     default:
         return state;

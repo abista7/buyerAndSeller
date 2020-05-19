@@ -1,39 +1,43 @@
-import React, { Component } from 'react';
-import Item from './Item.js';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
-import {} from '../redux/actions/itemActions';
-import { setIsLoggedIn } from '../redux/actions/userActions.js';
+import {populateItems} from '../redux/actions/itemActions';
+import {NavLink} from 'react-router-dom';
 
-const ItemList = ({items, isLoggedIn}) => {
-        return (
-            <div className="pt-5 container">
-                <p className="display-4">Currently posted on the Exchange</p><hr></hr><br />
-                <div className="justify-content-center pt-2" style={{display: 'flex', flexWrap: 'wrap'}}>
-                    {items.map((item, key) => {
-                        return (
-                            <div>
-                                <br />
-                                <div className="card b-3 bg-light px-4 pt-3 pb-3 mx-4" key={key}>    
-                                    <div class="card-header border">{item.name}</div>
-                                    <div class="card-body">
-                                        <h5 class="card-title">${item.price}</h5>
-                                        <p class="card-text">{item.description}</p>
-                                        <hr/>
-                                        <p class="card-text">Seller: {item.seller}</p>
-                                        {isLoggedIn && (
-                                            <button className="btn btn-secondary mt-2 mb-2" onClick={() => {/*call some function triggering backend service here, update items state for that item*/}}>
-                                                 Purchase Item
-                                            </button>
-                                        )}
-                                    </div>
+const ItemList = ({items, isLoggedIn, dispatch}) => {
+    useEffect(() => {   
+        dispatch(populateItems());
+    }, []);
+
+    return (
+        <div className="pt-5 container">
+            <p className="display-4">Currently posted on the Exchange</p><hr></hr><br />
+            <div className="justify-content-center pt-2" style={{display: 'flex', flexWrap: 'wrap'}}>
+                {items.map((item, key) => {
+                    return (
+                        <div key={key}>
+                            <br />
+                            <div className="card b-3 bg-light px-4 pt-3 pb-3 mx-4">    
+                                <div className="card-header border">{item.name}</div>
+                                <div className="card-body">
+                                    <h5 className="card-title">${item.price}</h5>
+                                    <p className="card-text">{item.description}</p>
+                                    <hr/>
+                                    <p className="card-text">Seller: {item.seller}</p>
+                                    {isLoggedIn && (
+                                        <div>
+                                            <NavLink className="btn btn-secondary" to={{pathname:`/item`, search: `?id=${item._id}`}} >View Item</NavLink>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        );
-                    })}
-               </div>
-           
+                        </div>
+                    );
+                })}
+
             </div>
-        );  
+        
+        </div>
+    );  
 }
 
 const mapStateToProps = state => ({

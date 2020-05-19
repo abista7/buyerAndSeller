@@ -1,15 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react'
 import {connect} from 'react-redux';
 import {setUser, setPassword, login} from '../redux/actions/userActions';
+import {Redirect} from 'react-router-dom';
 
-const Login = ({isLoggedIn, dispatch, email, role}) => {
+const Login = ({isLoggedIn, dispatch, role}) => {
+    const [failedLogin, setFailedLogin] = useState(false);
+
     const attemptLogin = () => {
-        //query mongo with entered data, then 
-        //if user credentials are good
         dispatch(login());
-        //dispatch(setIsLoggedIn(true)); //temporary, check db with password and user value before doing this
-       
-        //else return jsx component with invalid message
+    }
+
+    const checkIfSuccess= () => {
+        if(!isLoggedIn)
+            setFailedLogin(true);
     }
 
     return (
@@ -29,21 +32,35 @@ const Login = ({isLoggedIn, dispatch, email, role}) => {
                     <div className="text-left">
                         <button 
                             id="submit" 
-                            onClick={attemptLogin}
+                            onClick={() => {attemptLogin(); checkIfSuccess();}}
                             className="btn btn-primary mb-2">
                             Login
                         </button>
                     </div>
                 </div>    
             )}
-            <h1>TEST: email is ({email}) <br/>and the role is ({role})</h1>
+            {isLoggedIn && (
+                <div>
+                    <div className="mt-3 mb-3 card bg-success text-white"> Successfully logged in! </div>
+                        <div>
+                        {role=="buyer" && ( 
+                            <Redirect to={{ pathname: "/user/buyer"}}/>
+                        )}
+                        {role=="seller" && ( 
+                           <Redirect to={{ pathname: "/user/seller"}}/>
+                        )}
+                    </div>
+                </div>
+            )}
+            {failedLogin && !isLoggedIn && (
+                <div className="mt-3 mb-3 card bg-danger text-white"> Invalid credentials, please try again. </div>
+            )}
         </div>
     );
 }
 
 const mapStateToProps = state => ({
     user: state.userReducer.user,
-    email: state.userReducer.email,
     role: state.userReducer.role,
     password: state.userReducer.password,
     isLoggedIn: state.userReducer.isLoggedIn,

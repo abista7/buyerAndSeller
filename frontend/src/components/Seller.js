@@ -1,17 +1,22 @@
-import React, {useState} from 'react'
-import {connect} from 'react-redux'
+import React, {useState} from 'react';
+import {connect} from 'react-redux';
+import {setName, setPrice, setDescription, postItemToDB} from '../redux/actions/itemActions';
 
-const Seller = ({isLoggedIn, dispatch, role, user, items}) => {
+const Seller = ({isLoggedIn, dispatch, role, user, items, name}) => {
     const [showSoldItems, toggleShowSoldItems] = useState(false);
     const [showListedItems, toggleShowListedItems] = useState(false);
     const [showPostForm, toggleShowPostForm] = useState(true);
+
+    const attemptPost = (event) => {
+        event.preventDefault();
+        dispatch(postItemToDB());
+    }
 
     return (
         <div className="mt-4">
             {isLoggedIn && role == "seller" && (
                 <div className="parent-container d-flex">
-                    <div className="container">
-                        <div classname="row">
+                    <div className="container">                  
                             <div className="display-4 ">Welcome {user}</div>
 
                             <div className="">
@@ -62,40 +67,38 @@ const Seller = ({isLoggedIn, dispatch, role, user, items}) => {
                                     );
                                 }))}
                             </div>
-                        </div>
                     </div>
 
                     <div className="container mt-5">
-                        <div classname="row">
-                            {showPostForm && (
-                               
+                            {showPostForm && (                   
                                 <div className="card bg-light col-md-8">       
                                     <br /><br /><br />              
                                     <br /><h3 className="text-left pb-3 mt-3"><em>Post an item to the 9.5 Exchange's Catalog</em></h3>
                                     <div className="pb-2 col-md-10">
                                         <label className="float-left">Item Name</label>
-                                        <input type="text" className="form-control mb-2" placeholder=" enter item name" onChange={() => {}}/>
+                                        <input type="text" className="form-control mb-2" placeholder=" enter item name" onChange={e=> dispatch(setName(e.target.value))}/>
                                     </div>
+                                    
                                     <div className="pb-2 col-md-10">
                                         <label className="float-left">Description</label>
-                                        <textarea className="form-control" placeholder="enter item description" rows="5" onChange={() => {}}/>
+                                        <textarea className="form-control" placeholder="enter item description" rows="5" onChange={e=> dispatch(setDescription(e.target.value))}/>
                                     </div>
                                     <div className="pb-2 col-md-4">
                                         <label className="float-left">Price</label>
-                                        <input type="text" className="form-control" placeholder=" enter item price" onChange={() => {}}/>
+                                        <input type="text" className="form-control" placeholder="" onChange={e=> dispatch(setPrice(e.target.value))}/>
                                     </div>
 
                                     <div className="text-left col-md-2 mt-2">
                                         <button 
-                                            onClick={() => {}}
+                                            onClick={(e) => {attemptPost(e)}}
                                             className="btn btn-primary mb-2">
-                                            Sell!
+                                            Post!
                                         </button>
-                                    </div>                   
+                                    </div>             <h1>NAME IS {name}</h1>             
                                 </div>
-                            
+                        
                             )}
-                        </div>
+                        
                     </div>
                 </div>
             )}
@@ -107,10 +110,12 @@ const Seller = ({isLoggedIn, dispatch, role, user, items}) => {
 
 const mapStateToProps = state => ({
     user: state.userReducer.user,
-    //password: state.userReducer.password,
     isLoggedIn: state.userReducer.isLoggedIn,
     role: state.userReducer.role,
     items: state.itemReducer.items,
+    name: state.itemReducer.name, 
+    price: state.itemReducer.price,
+    description: state.itemReducer.description,
 });
 
 export default connect(mapStateToProps)(Seller);
