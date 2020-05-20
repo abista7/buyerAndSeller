@@ -2,6 +2,26 @@ version: '3'
 
 services:
 
+  notification: 
+    build: ./notification
+    image: nodejs
+    container_name: notification-server
+    restart: unless-stopped
+    env_file: .env
+    expose:
+      - "${NOTIFICATION_SERVER_PORT}"
+    ports:
+      - "${NOTIFICATION_SERVER_PORT}:${NOTIFICATION_SERVER_PORT}"
+    volumes:
+      - ./notification:/home/node/app
+      - /home/node/app/node_modules
+    networks:
+      - app-network
+    links:
+      - kafka
+      - auth
+    command: node notification.server.js
+
   receipt: 
     build: ./receipt
     image: nodejs
@@ -14,7 +34,7 @@ services:
       - "${RECEIPT_SERVER_PORT}:${RECEIPT_SERVER_PORT}"
     volumes:
       - ./receipt:/home/node/app
-      - ./receipt/node_modules:/home/node/app/node_modules
+      - /home/node/app/node_modules
     networks:
       - app-network
     links:
@@ -34,7 +54,7 @@ services:
       - "${TRANSACTION_SERVER_PORT}:${TRANSACTION_SERVER_PORT}"
     volumes:
       - ./transaction:/home/node/app
-      - ./transaction/node_modules:/home/node/app/node_modules
+      - /home/node/app/node_modules
     networks:
       - app-network
     links:
@@ -53,7 +73,7 @@ services:
       - "${STATS_SERVER_PORT}:${STATS_SERVER_PORT}"
     volumes:
       - ./stats:/home/node/app
-      - ./stats/node_modules:/home/node/app/node_modules
+      - /home/node/app/node_modules
     networks:
       - app-network
     links:
@@ -72,7 +92,7 @@ services:
       - "${GATEWAY_SERVER_PORT}:${GATEWAY_SERVER_PORT}"
     volumes:
       - ./gateway:/home/node/app
-      - ./gateway/node_modules:/home/node/app/node_modules
+      - /home/node/app/node_modules
     networks:
       - app-network
     links:
@@ -92,7 +112,7 @@ services:
       - "${AUTH_SERVER_PORT}:${AUTH_SERVER_PORT}"
     volumes:
       - ./auth:/home/node/app
-      - ./auth/node_modules:/home/node/app/node_modules
+      - /home/node/app/node_modules
     networks:
       - app-network
     links:
@@ -112,7 +132,7 @@ services:
       - "${INVENTORY_SERVER_PORT}:${INVENTORY_SERVER_PORT}"
     volumes:
       - ./inventory:/home/node/app
-      - ./inventory/node_modules:/home/node/app/node_modules
+      - /home/node/app/node_modules
     networks:
       - app-network
     links:

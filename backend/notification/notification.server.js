@@ -7,9 +7,9 @@ const axios = require('axios')
 const { Kafka } = require('kafkajs')
 
 const consumer = new Kafka({
-    clientId: 'receipt-server',
+    clientId: 'notification-server',
     brokers: [`kafka:${process.env.KAFKA_SERVER_PORT}`]
-}).consumer({ groupId: 'receipt-server' })
+}).consumer({ groupId: 'notification-server' })
 
 const kafkaTopic = process.env.KAFKA_TOPIC_NAME
 
@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 app.use(cors());
 
-const PORT = process.env.RECEIPT_SERVER_PORT || 4005;
+const PORT = process.env.NOTIFICATION_SERVER_PORT || 4006;
 
 async function start() {
     try {
@@ -42,7 +42,7 @@ async function start() {
             eachMessage: async ({ topic, partition, message }) => {
                 const { buyer, item } = JSON.parse(message.value)
 
-                const res = await axios.get(`http://auth:${process.env.AUTH_SERVER_PORT}/api/auth/user/${buyer}`)
+                const res = await axios.get(`http://auth:${process.env.AUTH_SERVER_PORT}/api/auth/user/${item.seller}`)
 
                 if (!res.data.valid) {
                     console.log(`Cannot sent email to user ${buyer}. User not found.`)
@@ -54,8 +54,8 @@ async function start() {
                 const mailOptions = {
                     from: email,
                     to: user.email,
-                    subject: 'Sending Email about paycheck',
-                    text: `${buyer} paycheck. Item description: ${item.description}. Item price: ${item.price}`
+                    subject: 'Sending Email about purchaise',
+                    text: `Item ${item.name} was purchased by ${buyer}. Item description: ${item.description}. Item price: ${item.price}`
                 };
                 
                 transporter.sendMail(mailOptions, function (error, info) {
