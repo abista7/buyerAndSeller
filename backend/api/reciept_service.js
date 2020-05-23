@@ -17,7 +17,7 @@ consumer.on('message', (message) => {
 
   var data = JSON.parse(JSON.parse(message.value))
   var cost = data.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  var emailText = "Here is your reciept from the 9.5 Exchange.\n\nYou purchased " + data.name + " from " 
+  var emailText = "Here is your receipt from the 9.5 Exchange.\n\nYou purchased " + data.name + " from " 
    + data.seller + " for $" + cost + ".\n\nCongratulations!\n\nItem Description: " + data.description;
 
 
@@ -33,7 +33,7 @@ consumer.on('message', (message) => {
   const mailOptions = {
     from: fromEmail,
     to: fromEmail,
-    subject: 'Your Reciept from the 9.5 Exchange!',
+    subject: 'Your Receipt from the 9.5 Exchange!',
     text: emailText,
   };
   
