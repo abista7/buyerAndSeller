@@ -42,6 +42,12 @@ app.all("/api/transaction", (req, res) => {
   });
 });
 
+app.all("/api/notification", (req, res) => {
+  apiProxy.web(req, res, {
+      target: 'http://localhost:4006',
+  });
+});
+
 // just to test
 app.all("/api/stats/get", (req, res) => {
     apiProxy.web(req, res, {
